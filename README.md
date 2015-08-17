@@ -57,6 +57,14 @@ It's that easy.
 
 In addition I've also added all the neat template tags which was present in the Blade for WordPress plugin, plus some new ones.
 
+#### Add scripts
+
+The most awesome of all template tags is the @scripts directive. This allows you to enqueue scripts (via WordPress) in your views. When the view is loaded, so is the script. The scripts should be relative to the theme root.
+
+```php
+@scripts(['js/myawesome.js', 'bower_components/awesome/package.js'])
+```
+
 #### Custom WP_Query
 
 *** Blade ***
