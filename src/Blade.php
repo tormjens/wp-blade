@@ -230,6 +230,26 @@ class Blade {
 		    return str_replace('@wpend', '<?php endif; wp_reset_postdata(); ?>', $view);
 		});
 
+		// add @scripts
+		$self = $this;
+		$this->blade->getCompiler()->directive('scripts', function($expression) use ($self) {
+            return '<?php '. get_class($self) .'::add_scripts('.$expression.'); ?>';
+        });
+
+	}
+
+	/**
+	 * Adds scripts added via the scripts directive
+	 * @param array $scripts
+	 */
+	public static function add_scripts($scripts) {
+		add_action('wp_enqueue_scripts', function() use($scripts) {
+			foreach($scripts as $script) {
+				$name = basename($script);
+				$slug = sanitize_title($name);
+				wp_enqueue_script( $slug, get_template_directory_uri() . '/' . $script, ['jquery'] );
+			}
+		});
 	}
 
 }
