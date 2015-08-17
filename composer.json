@@ -1,0 +1,19 @@
+{
+    "name": "tormjens/wp-blade",
+    "description": "Use Blade templates in your WordPress theme",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tor Morten Jensen",
+            "email": "tormorten@tormorten.no"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Tormorten\\WPBlade\\": "src/"
+        }
+    },
+    "require": {
+        "philo/laravel-blade": "^3.0"
+    }
+}
