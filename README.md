@@ -55,7 +55,7 @@ In addition I've also added all the neat template tags which was present in the 
 
 #### Custom WP_Query
 
-** Blade **
+*** Blade ***
 ```php
 	@wpquery(array('post_type' => 'post'))
 		<h1>{{ the_title() }}</h1>
@@ -64,7 +64,7 @@ In addition I've also added all the neat template tags which was present in the 
 	@wpend
 ```
 
-** Produces ***
+*** Produces ***
 ```php
 	<?php $bladequery = new WP_Query( array( 'post_type' => 'post' ) ); ?>
 	<?php if ( $bladequery->have_posts() ) : ?>
@@ -78,7 +78,7 @@ In addition I've also added all the neat template tags which was present in the 
 
 #### WordPress Posts Loop
 
-** Blade **
+*** Blade ***
 ```php
 	@wpposts
 		<h1>{{ the_title() }}</h1>
@@ -87,7 +87,7 @@ In addition I've also added all the neat template tags which was present in the 
 	@wpend
 ```
 
-** Produces ***
+*** Produces ***
 ```php
 	<?php if ( have_posts() ) : ?>
 	        <?php while ( have_posts() ) : the_post(); ?>
@@ -99,7 +99,7 @@ In addition I've also added all the neat template tags which was present in the 
 ```
 
 #### Advanced Custom Fields: Repeater/Flexible Content
-** Blade **
+*** Blade ***
 ```php
 	@acf('images')
 		<img src="@subfield('image')" />
@@ -108,7 +108,7 @@ In addition I've also added all the neat template tags which was present in the 
 	@wpend
 ```
 
-** Produces ***
+*** Produces ***
 ```php
 	<?php if ( have_rows('images') ) : ?>
 	        <?php while ( have_rows('images') ) : the_row(); ?>
@@ -120,12 +120,12 @@ In addition I've also added all the neat template tags which was present in the 
 ```
 
 #### Advanced Custom Fields: Display Field
-** Blade **
+*** Blade ***
 ```php
 	@field('name')
 ```
 
-** Produces ***
+*** Produces ***
 ```php
 	<?php if ( get_field('name') ) : ?>
 		<?php the_field('name'); ?>
@@ -133,7 +133,7 @@ In addition I've also added all the neat template tags which was present in the 
 ```
 
 #### Advanced Custom Fields: Has Field
-** Blade **
+*** Blade ***
 ```php
 	@hasfield('name')
 		<div class="my-name-field">@field('name')</div>
@@ -142,7 +142,7 @@ In addition I've also added all the neat template tags which was present in the 
 	@endif
 ```
 
-** Produces ***
+*** Produces ***
 ```php
 	<?php if ( get_field('name') ) : ?>
 		<div class="my-name-field"><?php the_field('name'); ?></div>
