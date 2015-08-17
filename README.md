@@ -4,6 +4,10 @@ Use the very latest of Laravel's Blade templating engine in your WordPress theme
 
 The class is inspired by the Blade for [WordPress plugin by Mikael Mattsson](https://github.com/MikaelMattsson/blade), and relies heavily on the standalone [Laravel Blade by Philo Hermans](https://github.com/PhiloNL).
 
+## Example
+
+The class is being used in the [theme AnunaBlade](https://github.com/tormjens/anunablade). Check it out for inspiration.
+
 ## What is Blade?
 
 Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. All Blade views are compiled into plain PHP code and cached until they are modified, meaning Blade adds essentially zero overhead to your theme.
