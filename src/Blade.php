@@ -38,6 +38,8 @@ class Blade {
 		$this->cache = $cache;
 		$this->view_cache = $this->views . '/cache';
 
+		$this->maybeCreateCacheDirectory();
+
 		$this->blade = new \Philo\Blade\Blade($this->views, $this->cache);
 		$this->extend();
 
@@ -47,6 +49,19 @@ class Blade {
 		// Listen for Buddypress include action
 		add_filter( 'bp_template_include', array( $this, 'blade_include' ));
 
+	}
+
+	/**
+	 * Checks whether the cache directory exists, and if not creates it.
+	 * @return boolean
+	 */
+	public function maybeCreateCacheDirectory() {
+		if(!is_dir($this->cache)) {
+			if(wp_mkdir_p($this->cache)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
