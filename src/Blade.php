@@ -30,6 +30,12 @@ class Blade {
 	protected $cache;
 
 	/**
+	 * Controllers
+	 * @var Controllers
+	 */
+	public $controller;
+
+	/**
 	 * Set up hooks and initialize Blade
 	 */
 	public function __construct($views, $cache) {
@@ -37,6 +43,7 @@ class Blade {
 		$this->views = $views;
 		$this->cache = $cache;
 		$this->view_cache = $this->views . '/cache';
+		$this->controller = new Controllers;
 
 		$this->maybeCreateCacheDirectory();
 
@@ -96,8 +103,11 @@ class Blade {
 			// blade friendly name
 			$view = str_replace('.php', '', $file);
 
+			// find a controller
+			$controller = $this->getController($view);
+
 			// run the blade code
-			echo $this->blade->view()->make('cache.'. $view)->render();
+			echo $this->blade->view()->make('cache.'. $view)->with(['data' => $controller ? $controller->process() : []])->render();
 
 			// halt including
 			return '';
@@ -110,8 +120,11 @@ class Blade {
 			// blade friendly name
 			$view = str_replace('.php', '', $file);
 
+			// find a controller
+			$controller = $this->getController($view);
+
 			// run the blade code
-			echo $this->blade->view()->make('cache.'. $view)->render();
+			echo $this->blade->view()->make('cache.'. $view)->with(['data' => $controller ? $controller->process() : []])->render();
 
 			// halt including
 			return '';
@@ -119,6 +132,21 @@ class Blade {
 
 		// return an empty string to stop wordpress from including the template when we are doing it
 		return $template;
+	}
+
+	/**
+	 * Check if the view has a controller which can be attached
+	 * @param  string $view The view name
+	 * @return mixed A controller instance or false
+	 */
+	protected function getController($view)
+	{
+		foreach($this->controller->getControllers() as $controller) {
+			if(in_array($view, $controller->getViews())) {
+				return $controller;
+			}
+		}
+		return false;
 	}
 
 	/**
