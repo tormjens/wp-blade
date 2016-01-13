@@ -31,7 +31,7 @@ Install it using Composer
 First you must introduce the class to your WordPress enviroment, this can be done in the `functions.php` of your theme.
 
 ```php
-new \Tormorten\WPBlade\Blade(
+$blade = new \Tormorten\WPBlade\Blade(
 	get_template_directory() . '/templates',
 	WP_CONTENT_DIR . '/blade_cache'
 );
@@ -52,6 +52,48 @@ Now Blade is availiable in your theme. If you wanted to "Bladify" the single.php
 ```
 
 It's that easy.
+
+### Controllers
+
+Since your templates should contain very little logic, you can use Logic Controllers which should contain your logic.
+
+To use logic controllers, define a class in your theme that extends `Tormorten\WPBlade\Controller`
+
+```php 
+namespace My\Awesome\Namespace;
+
+use Tormorten\WPBlade\Controller;
+
+class HomeController extends Controller {
+
+	protected $views = [
+		'index'
+	];
+
+	public function process()
+	{
+		return ['home' => 'that', 'page' => 'this'];
+	}
+
+}
+```
+
+Then you register your controller with Blade:
+
+```php 
+
+$blade->controllers->register([
+	\My\Awesome\Namespace\HomeController::class
+]);
+```
+
+WP-Blade will automatically pass the array you return in your `process()` method to the view, so you can access it in your views.
+
+```
+{{ $data['home'] }}
+```
+
+The logic controller is only applied to templates in the WordPress hierarchy.
 
 ### Custom Tags
 
