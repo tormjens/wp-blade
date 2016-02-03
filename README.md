@@ -82,7 +82,7 @@ Then you register your controller with Blade:
 
 ```php 
 
-$blade->controllers->register([
+$blade->controller->register([
 	\My\Awesome\Namespace\HomeController::class
 ]);
 ```
