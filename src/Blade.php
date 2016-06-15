@@ -71,8 +71,8 @@ class Blade {
 	 */
 	public function __construct() {
 
-		$this->views = [trailingslashit( defined( 'BLADE_VIEWS' ) ? BLADE_VIEWS : WP_CONTENT_DIR . 'views' )];
-		$this->cache = trailingslashit( defined( 'BLADE_CACHE' ) ? BLADE_CACHE : WP_CONTENT_DIR . '.views_cache' );
+		$this->views = [trailingslashit( defined( 'BLADE_VIEWS' ) ? BLADE_VIEWS : trailingslashit( get_template_directory() ) . 'views' )];
+		$this->cache = trailingslashit( defined( 'BLADE_CACHE' ) ? BLADE_CACHE : trailingslashit( get_template_directory() ) . '.views_cache' );
 		$this->view_cache = $this->views[0] . 'cache';
 
 		// Create the third-party Blade compiler
