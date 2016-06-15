@@ -10,10 +10,10 @@
     ],
     "autoload": {
         "psr-4": {
-            "Tormorten\\WPBlade\\": "src/"
+            "TorMorten\\View\\": "src/"
         }
     },
     "require": {
-        "philo/laravel-blade": "^3.0"
+        "xiaoler/blade": "^0.2.2"
     }
 }

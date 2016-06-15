@@ -1,4 +1,4 @@
-<?php namespace Tormorten\WPBlade;
+<?php namespace TorMorten\View;
 
 /**
  * Logic Controller
