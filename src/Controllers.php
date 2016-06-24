@@ -14,7 +14,12 @@ class Controllers {
 	/**
 	 * Constructor
 	 */
-	public function __construct() {}
+	public function __construct() {
+		$filterControllers = apply_filters('wp_blade_controllers', array());
+		if($filterControllers) {
+			$this->register($filterControllers);
+		}
+	}
 
 	/**
 	 * Get all controllers
@@ -31,7 +36,7 @@ class Controllers {
 	 */
 	public function register($controllers) {
 		if(!is_array($controllers)) {
-			$controllers = [$controllers];
+			$controllers = array($controllers);
 		}
 
 		foreach($controllers as $controller) {
