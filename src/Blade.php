@@ -72,13 +72,13 @@ class Blade {
 	public function __construct() {
 
 		// Directory where views are loaded from
-		$viewDirectory    = trailingslashit( apply_filters('wp_blade_views_directory', defined( 'BLADE_VIEWS' ) ? BLADE_VIEWS : trailingslashit( get_template_directory() ) . 'views' ) );
+		$viewDirectory    = trailingslashit( apply_filters( 'wp_blade_views_directory', defined( 'BLADE_VIEWS' ) ? BLADE_VIEWS : trailingslashit( get_template_directory() ) . 'views' ) );
 
 		// Directory where compiled templates are cached
-		$cacheDirectory   = trailingslashit( apply_filters('wp_blade_cache_directory', defined( 'BLADE_CACHE' ) ? BLADE_CACHE : trailingslashit( get_template_directory() ) . '.views_cache' ) );
+		$cacheDirectory   = trailingslashit( apply_filters( 'wp_blade_cache_directory', defined( 'BLADE_CACHE' ) ? BLADE_CACHE : trailingslashit( get_template_directory() ) . '.views_cache' ) );
 
 		// Set class properties
-		$this->views      = array($viewDirectory);
+		$this->views      = array( $viewDirectory );
 		$this->cache      = $cacheDirectory;
 		$this->view_cache = $this->views[0] . 'cache';
 
@@ -125,9 +125,9 @@ class Blade {
 	 * @return string           Compiled template
 	 */
 	public function view( $template, $with = array() ) {
-		$template = apply_filters('wp_blade_include_template', $template, $with);
-		$with     = apply_filters('wp_blade_include_arguments', $with, $template);
-		$html     = apply_filters('wp_blade_include_html', $this->factory->make( $template, $with )->render(), $template, $with);
+		$template = apply_filters( 'wp_blade_include_template', $template, $with );
+		$with     = apply_filters( 'wp_blade_include_arguments', $with, $template );
+		$html     = apply_filters( 'wp_blade_include_html', $this->factory->make( $template, $with )->render(), $template, $with );
 		return $html;
 	}
 
@@ -262,11 +262,11 @@ class Blade {
 
 	/**
 	 * Adds controller
-	 * @param mixed $controller Array or string of class names
+	 *
+	 * @param mixed   $controller Array or string of class names
 	 */
-	public function addController($controller)
-	{
-		$this->controller->register($controller);
+	public function addController( $controller ) {
+		$this->controller->register( $controller );
 	}
 
 	/**
@@ -308,6 +308,7 @@ class Blade {
 
 	/**
 	 * Extend blade with some custom directives
+	 *
 	 * @return void
 	 */
 	protected function extend() {
@@ -315,93 +316,93 @@ class Blade {
 		/**
 		 * WP Query Directives
 		 */
-		$this->compiler->directive('wpposts', function() {
+		$this->compiler->directive( 'wpposts', function() {
 			return '<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>';
-		});
+		} );
 
-		$this->compiler->directive('wpquery', function($expression) {
+		$this->compiler->directive( 'wpquery', function( $expression ) {
 			$php  = '<?php $bladequery = new WP_Query'.$expression.'; ';
 			$php .= 'if ( $bladequery->have_posts() ) : ';
 			$php .= 'while ( $bladequery->have_posts() ) : ';
 			$php .= '$bladequery->the_post(); ?> ';
 			return $php;
-		});
+		} );
 
-		$this->compiler->directive('wpempty', function() {
+		$this->compiler->directive( 'wpempty', function() {
 			return '<?php endwhile; ?><?php else: ?>';
-		});
+		} );
 
-		$this->compiler->directive('wpend', function() {
+		$this->compiler->directive( 'wpend', function() {
 			return '<?php endif; wp_reset_postdata(); ?>';
-		});
+		} );
 
 		/**
 		 * Advanced Custom Field Directives
 		 */
 
-		$this->compiler->directive('acfempty', function() {
-			if(function_exists('get_field')) {
+		$this->compiler->directive( 'acfempty', function() {
+			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			return '<?php endwhile; ?><?php else: ?>';
-		});
+		} );
 
-		$this->compiler->directive('acfend', function() {
-			if(function_exists('get_field')) {
+		$this->compiler->directive( 'acfend', function() {
+			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			return '<?php endif; ?>';
-		});
+		} );
 
-		$this->compiler->directive('acf', function($expression) {
-			if(function_exists('get_field')) {
+		$this->compiler->directive( 'acf', function( $expression ) {
+			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			$php = '<?php if ( have_rows'.$expression.' ) : ';
 			$php .= 'while ( have_rows'.$expression.' ) : the_row(); ?>';
 			return $php;
-		});
+		} );
 
-		$this->compiler->directive('acffield', function($expression) {
-			if(function_exists('get_field')) {
+		$this->compiler->directive( 'acffield', function( $expression ) {
+			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			$php = '<?php if ( get_field'.$expression.' ) : ';
 			$php .= 'the_field'.$expression.'; endif; ?>';
 			return $php;
-		});
+		} );
 
-		$this->compiler->directive('acfhas', function($expression) {
-			if(function_exists('get_field')) {
+		$this->compiler->directive( 'acfhas', function( $expression ) {
+			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			$php = '<?php if ( $field = get_field'.$expression.' ) : ';
 			return $php;
-		});
+		} );
 
-		$this->compiler->directive('acfsub', function($expression) {
-			if(function_exists('get_field')) {
+		$this->compiler->directive( 'acfsub', function( $expression ) {
+			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			$php = '<?php if ( get_sub_field'.$expression.' ) : ';
 			$php .= 'the_sub_field'.$expression.'; endif; ?>';
 			return $php;
-		});
+		} );
 
 		/**
 		 * Just some handy directives
 		 */
 
-		$this->compiler->directive('var', function($expression) {
-			$expression = substr($expression, 1, -1);
-			$segments = explode(',', $expression, 2);
-			$segments = array_map('trim', $segments);
+		$this->compiler->directive( 'var', function( $expression ) {
+			$expression = substr( $expression, 1, -1 );
+			$segments = explode( ',', $expression, 2 );
+			$segments = array_map( 'trim', $segments );
 
-			$key = substr($segments[0], 1, -1);
+			$key = substr( $segments[0], 1, -1 );
 			$value = $segments[1];
 
 			return '<?php $'.$key.' = apply_filters(\'wp_blade_variable_sanitize\', '. $value .'); ?>';
-		});
+		} );
 
 	}
 

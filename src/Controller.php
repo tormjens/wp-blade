@@ -7,6 +7,7 @@ class Controller {
 
 	/**
 	 * Defines which views the controller will send data to
+	 *
 	 * @var array
 	 */
 	protected $views = [];
@@ -14,10 +15,11 @@ class Controller {
 	/**
 	 * Constructor
 	 */
-	public function __construct(){}
+	public function __construct() {}
 
 	/**
 	 * Handles the logic
+	 *
 	 * @return array Should always return an array of data
 	 */
 	public function process() {
@@ -26,6 +28,7 @@ class Controller {
 
 	/**
 	 * Get the views
+	 *
 	 * @return array
 	 */
 	public function getViews() {
