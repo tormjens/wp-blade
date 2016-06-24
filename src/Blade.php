@@ -400,7 +400,7 @@ class Blade {
 			$key = substr($segments[0], 1, -1);
 			$value = $segments[1];
 
-			return '<?php $'.$key.' = apply_filters(\'wp_blade_variable_sanitize, '. $value .'\'); ?>';
+			return '<?php $'.$key.' = apply_filters(\'wp_blade_variable_sanitize\', '. $value .'); ?>';
 		});
 
 	}
