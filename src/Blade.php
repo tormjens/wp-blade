@@ -69,7 +69,7 @@ class Blade {
 	/**
 	 * Set up hooks and initialize Blade
 	 */
-	public function __construct() {
+	public function __construct($actions = true) {
 
 		// Directory where views are loaded from
 		$viewDirectory    = trailingslashit( apply_filters( 'wp_blade_views_directory', defined( 'BLADE_VIEWS' ) ? BLADE_VIEWS : trailingslashit( get_template_directory() ) . 'views' ) );
@@ -102,11 +102,13 @@ class Blade {
 		// Create the blade instance
 		$this->factory = new Factory( $this->compilerEngine, $this->finder );
 
-		// Bind to template include action
-		add_action( 'template_include', array( $this, 'blade_include' ) );
+		if($actions) {
+			// Bind to template include action
+			add_action( 'template_include', array( $this, 'blade_include' ) );
 
-		// Listen for Buddypress include action
-		add_filter( 'bp_template_include', array( $this, 'blade_include' ) );
+			// Listen for Buddypress include action
+			add_filter( 'bp_template_include', array( $this, 'blade_include' ) );
+		}
 
 	}
 
@@ -139,7 +141,7 @@ class Blade {
 	 * @return string           Compiled template
 	 */
 	public static function render( $template, $with = array() ) {
-		$instance = new static;
+		$instance = new static(false);
 		return $instance->view( $template, $path );
 	}
 
