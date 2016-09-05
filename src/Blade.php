@@ -142,7 +142,7 @@ class Blade {
 	 */
 	public static function render( $template, $with = array() ) {
 		$instance = new static(false);
-		return $instance->view( $template, $path );
+		return $instance->view( $template, $with );
 	}
 
 	/**
