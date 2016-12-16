@@ -3,7 +3,7 @@
 /**
  * Logic Controller
  */
-class Controller {
+abstract class Controller {
 
 	/**
 	 * Defines which views the controller will send data to
@@ -15,16 +15,16 @@ class Controller {
 	/**
 	 * Constructor
 	 */
-	public function __construct() {}
+	public function __construct() {
+		do_action( 'wp_blade_controller_booted', $this );
+	}
 
 	/**
 	 * Handles the logic
 	 *
 	 * @return array Should always return an array of data
 	 */
-	public function process() {
-		return array();
-	}
+	abstract public function process();
 
 	/**
 	 * Get the views

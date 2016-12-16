@@ -53,6 +53,8 @@ class Blade {
 	 */
 	public function __construct($actions = true) {
 
+		do_action( 'wp_blade_booting' );
+
 		// Directory where views are loaded from
 		$viewDirectory    = trailingslashit( apply_filters( 'wp_blade_views_directory', defined( 'BLADE_VIEWS' ) ? BLADE_VIEWS : trailingslashit( get_template_directory() ) . 'views' ) );
 
@@ -85,6 +87,8 @@ class Blade {
 			add_filter( 'bp_template_include', array( $this, 'blade_include' ) );
 		}
 
+		do_action( 'wp_blade_booted', $this );
+
 	}
 
 	/**
@@ -107,7 +111,23 @@ class Blade {
 	 * Set up hooks and initialize Blade
 	 */
 	public static function create() {
-		return new static;
+		return self::instance();
+	}
+
+	/**
+	 * Return the compiler instance
+	 * @return mixed
+	 */
+	public function compiler() {
+		return $this->factory->compiler();
+	}
+
+	/**
+	 * Return the factory instance
+	 * @return mixed
+	 */
+	public function factory() {
+		return $this->factory;
 	}
 
 	/**
@@ -125,6 +145,25 @@ class Blade {
 	}
 
 	/**
+	 * Compiles a string
+	 * @param  string $string A string with Blade flavored PHP
+	 * @param  array  $with An array with extra data passed to the string
+	 * @return string
+	 */
+	public function viewString( $string, $with = array() ) {
+		$key = md5($string);
+		$blade_file = $this->view_cache . '/' . $key . '.blade.php';
+		$template = 'cache.'. $key;
+
+		if(!file_exists( $blade_file )) {
+			// add the code to the cached blade file
+			file_put_contents( $blade_file, $string );
+		}
+
+		return $this->view( $template, $with );
+	}
+
+	/**
 	 * Renders a given template statically
 	 *
 	 * @param string  $template Path to the template
@@ -134,6 +173,20 @@ class Blade {
 	public static function render( $template, $with = array() ) {
 		$instance = self::instance();
 		return $instance->view( $template, $with );
+	}
+
+
+
+	/**
+	 * Renders a given template statically
+	 *
+	 * @param string  $template Path to the template
+	 * @param array   $with     Additional args to pass to the tempalte
+	 * @return string           Compiled template
+	 */
+	public static function renderString( $string, $with = array() ) {
+		$instance = self::instance();
+		return $instance->viewString( $string, $with );
 	}
 
 	/**
@@ -203,10 +256,8 @@ class Blade {
 			// blade friendly name
 			$view = str_replace( '.php', '', $file );
 
-			// find a controller
-			$controller = $this->getController( $view );
-
-			$data = $controller ? $controller->process() : array();
+			// get data for the view
+			$data = $this->getController( $view );
 
 			// run the blade code
 			echo $this->view( 'cache.'. $view, $data );
@@ -222,10 +273,8 @@ class Blade {
 			// blade friendly name
 			$view = str_replace( '.php', '', $file );
 
-			// find a controller
-			$controller = $this->getController( $view );
-
-			$data = $controller ? $controller->process() : array();
+			// get data for the view
+			$data = $this->getController( $view );
 
 			// run the blade code
 			echo $this->view( 'cache.'. $view, $data );
@@ -245,12 +294,7 @@ class Blade {
 	 * @return mixed A controller instance or false
 	 */
 	protected function getController( $view ) {
-		foreach ( $this->controller->getControllers() as $controller ) {
-			if ( in_array( $view, $controller->getViews() ) ) {
-				return $controller;
-			}
-		}
-		return false;
+		return $this->controller->getControllersForView( $view );
 	}
 
 	/**
@@ -309,11 +353,11 @@ class Blade {
 		/**
 		 * WP Query Directives
 		 */
-		$this->factory->compiler()->directive( 'wpposts', function() {
+		$this->compiler()->directive( 'wpposts', function() {
 			return '<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>';
 		} );
 
-		$this->factory->compiler()->directive( 'wpquery', function( $expression ) {
+		$this->compiler()->directive( 'wpquery', function( $expression ) {
 			$php  = '<?php $bladequery = new WP_Query'.$expression.'; ';
 			$php .= 'if ( $bladequery->have_posts() ) : ';
 			$php .= 'while ( $bladequery->have_posts() ) : ';
@@ -321,11 +365,11 @@ class Blade {
 			return $php;
 		} );
 
-		$this->factory->compiler()->directive( 'wpempty', function() {
+		$this->compiler()->directive( 'wpempty', function() {
 			return '<?php endwhile; ?><?php else: ?>';
 		} );
 
-		$this->factory->compiler()->directive( 'wpend', function() {
+		$this->compiler()->directive( 'wpend', function() {
 			return '<?php endif; wp_reset_postdata(); ?>';
 		} );
 
@@ -333,21 +377,21 @@ class Blade {
 		 * Advanced Custom Field Directives
 		 */
 
-		$this->factory->compiler()->directive( 'acfempty', function() {
+		$this->compiler()->directive( 'acfempty', function() {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			return '<?php endwhile; ?><?php else: ?>';
 		} );
 
-		$this->factory->compiler()->directive( 'acfend', function() {
+		$this->compiler()->directive( 'acfend', function() {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			return '<?php endif; ?>';
 		} );
 
-		$this->factory->compiler()->directive( 'acf', function( $expression ) {
+		$this->compiler()->directive( 'acf', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -356,7 +400,7 @@ class Blade {
 			return $php;
 		} );
 
-		$this->factory->compiler()->directive( 'acffield', function( $expression ) {
+		$this->compiler()->directive( 'acffield', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -365,7 +409,7 @@ class Blade {
 			return $php;
 		} );
 
-		$this->factory->compiler()->directive( 'acfhas', function( $expression ) {
+		$this->compiler()->directive( 'acfhas', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -373,7 +417,7 @@ class Blade {
 			return $php;
 		} );
 
-		$this->factory->compiler()->directive( 'acfsub', function( $expression ) {
+		$this->compiler()->directive( 'acfsub', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -386,7 +430,7 @@ class Blade {
 		 * Just some handy directives
 		 */
 
-		$this->factory->compiler()->directive( 'var', function( $expression ) {
+		$this->compiler()->directive( 'var', function( $expression ) {
 			$expression = substr( $expression, 1, -1 );
 			$segments = explode( ',', $expression, 2 );
 			$segments = array_map( 'trim', $segments );
@@ -396,6 +440,8 @@ class Blade {
 
 			return '<?php $'.$key.' = apply_filters(\'wp_blade_variable_sanitize\', '. $value .'); ?>';
 		} );
+
+		do_action( 'wp_blade_add_directive', $this->factory->compiler() );
 
 	}
 

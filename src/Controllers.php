@@ -31,6 +31,16 @@ class Controllers {
 		return $this->controllers;
 	}
 
+	public function getControllersForView( $view ) {
+		$data = array();
+		foreach ( $this->getControllers() as $controller ) {
+			if ( in_array( $view, $controller->getViews() ) ) {
+				$data = array_merge($data, $controller->process());
+			}
+		}
+		return $data;
+	}
+
 	/**
 	 * Register one or multiple controllers
 	 *
