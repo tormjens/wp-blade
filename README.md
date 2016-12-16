@@ -6,13 +6,18 @@ Blade is a much simpler template language than vanilla PHP, and compiles down to
 
 The plugin is intended for WordPress theme-developers that want to write a different flavor of template languages.
 
-Read more about Blade in the [Laravel documentation](https://laravel.com/docs/5.2/blade).
+Read more about Blade in the [Laravel documentation](https://laravel.com/docs/5.4/blade).
 
 For documentation and tips on how to get started using Blade in WordPress, please [check the docs](http://blade.tormorten.no/).
 
+## Features
+
+* PHP >= 5.6
+* Laravel Blade 5.4
+
 ## Changes
 
-For the 2.0 release the vendor for Blade has been changed, making WP Blade have less dependencies, and require a lower PHP version (5.4).
+We're back to the source for Blade. The illuminate/views package, which gives us the option of always having the latest changes to the Blade compiler engine. This includes the new components directive.
 
 ### Notice before upgrading from WP Blade
 
