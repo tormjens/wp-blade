@@ -1,40 +1,22 @@
 <?php namespace TorMorten\View;
 
-use Xiaoler\Blade\Compilers\BladeCompiler;
-use Xiaoler\Blade\Engines\CompilerEngine;
-use Xiaoler\Blade\FileViewFinder;
-use Xiaoler\Blade\Factory;
-
 /**
  * Uses the Blade templating engine
  */
 class Blade {
 
 	/**
-	 * Blade compiler
+	 * The single instance of the class.
 	 *
-	 * @var Xiaoler\Blade\Compilers\BladeCompiler
+	 * @var FjellCommerce
+	 * @since 1.0
 	 */
-	protected $compiler;
-
-	/**
-	 * Blade compiler engine
-	 *
-	 * @var Xiaoler\Blade\Engines\CompilerEngine
-	 */
-	protected $compilerEngine;
-
-	/**
-	 * View finder
-	 *
-	 * @var Xiaoler\Blade\FileViewFinder
-	 */
-	protected $finder;
+	protected static $_instance = null;
 
 	/**
 	 * View factory
 	 *
-	 * @var Xiaoler\Blade\Factory
+	 * @var TorMorten\Views\Factory
 	 */
 	protected $factory;
 
@@ -82,16 +64,6 @@ class Blade {
 		$this->cache      = $cacheDirectory;
 		$this->view_cache = $this->views[0] . 'cache';
 
-		// Create the third-party Blade compiler
-		$this->compiler = new BladeCompiler( $this->cache );
-		$this->extend(); // extend the compiler
-
-		// Ready the compiler engine
-		$this->compilerEngine = new CompilerEngine( $this->compiler );
-
-		// Create the file finder
-		$this->finder = new FileViewFinder( $this->views );
-
 		// Collect the controllers
 		$this->controller = new Controllers;
 
@@ -100,7 +72,10 @@ class Blade {
 		$this->maybeCreateViewCacheDirectory();
 
 		// Create the blade instance
-		$this->factory = new Factory( $this->compilerEngine, $this->finder );
+		$this->factory = new Factory( $this->views, $this->cache );
+
+		 // extend the compiler
+		$this->extend();
 
 		if($actions) {
 			// Bind to template include action
@@ -110,6 +85,22 @@ class Blade {
 			add_filter( 'bp_template_include', array( $this, 'blade_include' ) );
 		}
 
+	}
+
+	/**
+	 * Main Blade Instance.
+	 *
+	 * Ensures only one instance of Blade is loaded or can be loaded.
+	 *
+	 * @since 1.0
+	 * @static
+	 * @return TorMorten\View\Blade
+	 */
+	public static function instance() {
+		if ( is_null( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+		return self::$_instance;
 	}
 
 	/**
@@ -129,7 +120,7 @@ class Blade {
 	public function view( $template, $with = array() ) {
 		$template = apply_filters( 'wp_blade_include_template', $template, $with );
 		$with     = apply_filters( 'wp_blade_include_arguments', $with, $template );
-		$html     = apply_filters( 'wp_blade_include_html', $this->factory->make( $template, $with )->render(), $template, $with );
+		$html     = apply_filters( 'wp_blade_include_html', $this->factory->render( $template, $with ), $template, $with );
 		return $html;
 	}
 
@@ -141,7 +132,7 @@ class Blade {
 	 * @return string           Compiled template
 	 */
 	public static function render( $template, $with = array() ) {
-		$instance = new static(false);
+		$instance = self::instance();
 		return $instance->view( $template, $with );
 	}
 
@@ -318,11 +309,11 @@ class Blade {
 		/**
 		 * WP Query Directives
 		 */
-		$this->compiler->directive( 'wpposts', function() {
+		$this->factory->compiler()->directive( 'wpposts', function() {
 			return '<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>';
 		} );
 
-		$this->compiler->directive( 'wpquery', function( $expression ) {
+		$this->factory->compiler()->directive( 'wpquery', function( $expression ) {
 			$php  = '<?php $bladequery = new WP_Query'.$expression.'; ';
 			$php .= 'if ( $bladequery->have_posts() ) : ';
 			$php .= 'while ( $bladequery->have_posts() ) : ';
@@ -330,11 +321,11 @@ class Blade {
 			return $php;
 		} );
 
-		$this->compiler->directive( 'wpempty', function() {
+		$this->factory->compiler()->directive( 'wpempty', function() {
 			return '<?php endwhile; ?><?php else: ?>';
 		} );
 
-		$this->compiler->directive( 'wpend', function() {
+		$this->factory->compiler()->directive( 'wpend', function() {
 			return '<?php endif; wp_reset_postdata(); ?>';
 		} );
 
@@ -342,21 +333,21 @@ class Blade {
 		 * Advanced Custom Field Directives
 		 */
 
-		$this->compiler->directive( 'acfempty', function() {
+		$this->factory->compiler()->directive( 'acfempty', function() {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			return '<?php endwhile; ?><?php else: ?>';
 		} );
 
-		$this->compiler->directive( 'acfend', function() {
+		$this->factory->compiler()->directive( 'acfend', function() {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
 			return '<?php endif; ?>';
 		} );
 
-		$this->compiler->directive( 'acf', function( $expression ) {
+		$this->factory->compiler()->directive( 'acf', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -365,7 +356,7 @@ class Blade {
 			return $php;
 		} );
 
-		$this->compiler->directive( 'acffield', function( $expression ) {
+		$this->factory->compiler()->directive( 'acffield', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -374,7 +365,7 @@ class Blade {
 			return $php;
 		} );
 
-		$this->compiler->directive( 'acfhas', function( $expression ) {
+		$this->factory->compiler()->directive( 'acfhas', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -382,7 +373,7 @@ class Blade {
 			return $php;
 		} );
 
-		$this->compiler->directive( 'acfsub', function( $expression ) {
+		$this->factory->compiler()->directive( 'acfsub', function( $expression ) {
 			if ( function_exists( 'get_field' ) ) {
 				return '';
 			}
@@ -395,7 +386,7 @@ class Blade {
 		 * Just some handy directives
 		 */
 
-		$this->compiler->directive( 'var', function( $expression ) {
+		$this->factory->compiler()->directive( 'var', function( $expression ) {
 			$expression = substr( $expression, 1, -1 );
 			$segments = explode( ',', $expression, 2 );
 			$segments = array_map( 'trim', $segments );
