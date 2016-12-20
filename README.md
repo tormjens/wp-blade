@@ -10,6 +10,8 @@ Read more about Blade in the [Laravel documentation](https://laravel.com/docs/5.
 
 For documentation and tips on how to get started using Blade in WordPress, please [check the docs](http://blade.tormorten.no/).
 
+**For the Blade 5.4 version of WP Blade. Check out the [5.4-dev branch](https://github.com/tormjens/wp-blade/tree/5.4-dev)**
+
 ## Changes
 
 For the 2.0 release the vendor for Blade has been changed, making WP Blade have less dependencies, and require a lower PHP version (5.4).
