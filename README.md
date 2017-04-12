@@ -8,7 +8,7 @@ The plugin is intended for WordPress theme-developers that want to write a diffe
 
 Read more about Blade in the [Laravel documentation](https://laravel.com/docs/5.2/blade).
 
-For documentation and tips on how to get started using Blade in WordPress, please [check the docs](http://blade.tormorten.no/).
+For documentation and tips on how to get started using Blade in WordPress, please [check the docs](https://tormjens.github.io/wp-blade-docs/).
 
 **For the Blade 5.4 version of WP Blade. Check out the [5.4-dev branch](https://github.com/tormjens/wp-blade/tree/5.4-dev)**
 
