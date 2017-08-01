@@ -80,7 +80,7 @@ class Blade {
 		// Set class properties
 		$this->views      = array( $viewDirectory );
 		$this->cache      = $cacheDirectory;
-		$this->view_cache = $this->views[0] . 'cache';
+		$this->view_cache = $this->views[0];
 
 		// Create the third-party Blade compiler
 		$this->compiler = new BladeCompiler( $this->cache );
