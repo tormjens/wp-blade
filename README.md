@@ -1,5 +1,9 @@
 # Blade for WordPress
 
+***
+This package is no longer being maintained. If you'd like to get started using Blade in your WordPress development, I highly recommend you check out [Sage](https://github.com/roots/sage).
+***
+
 WP Blade brings the beloved Blade template engine to your WordPress-theme.
 
 Blade is a much simpler template language than vanilla PHP, and compiles down to readable PHP.
