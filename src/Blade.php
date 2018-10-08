@@ -378,51 +378,33 @@ class Blade {
 		 */
 
 		$this->compiler()->directive( 'acfempty', function() {
-			if ( function_exists( 'get_field' ) ) {
-				return '';
-			}
 			return '<?php endwhile; ?><?php else: ?>';
 		} );
 
 		$this->compiler()->directive( 'acfend', function() {
-			if ( function_exists( 'get_field' ) ) {
-				return '';
-			}
 			return '<?php endif; ?>';
 		} );
 
 		$this->compiler()->directive( 'acf', function( $expression ) {
-			if ( function_exists( 'get_field' ) ) {
-				return '';
-			}
-			$php = '<?php if ( have_rows'.$expression.' ) : ';
-			$php .= 'while ( have_rows'.$expression.' ) : the_row(); ?>';
+			$php = '<?php if ( have_rows('.$expression.') ) : ';
+			$php .= 'while ( have_rows('.$expression.') ) : the_row(); ?>';
 			return $php;
 		} );
 
 		$this->compiler()->directive( 'acffield', function( $expression ) {
-			if ( function_exists( 'get_field' ) ) {
-				return '';
-			}
-			$php = '<?php if ( get_field'.$expression.' ) : ';
-			$php .= 'the_field'.$expression.'; endif; ?>';
+			$php = '<?php if ( get_field('.$expression.') ) : ';
+			$php .= 'the_field('.$expression.'); endif; ?>';
 			return $php;
 		} );
 
 		$this->compiler()->directive( 'acfhas', function( $expression ) {
-			if ( function_exists( 'get_field' ) ) {
-				return '';
-			}
-			$php = '<?php if ( $field = get_field'.$expression.' ) : ';
+			$php = '<?php if ( $field = get_field('.$expression.') ) : ?>';
 			return $php;
 		} );
 
 		$this->compiler()->directive( 'acfsub', function( $expression ) {
-			if ( function_exists( 'get_field' ) ) {
-				return '';
-			}
-			$php = '<?php if ( get_sub_field'.$expression.' ) : ';
-			$php .= 'the_sub_field'.$expression.'; endif; ?>';
+			$php = '<?php if ( get_sub_field('.$expression.') ) : ';
+			$php .= 'the_sub_field('.$expression.'); endif; ?>';
 			return $php;
 		} );
 
